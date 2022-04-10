@@ -2,6 +2,9 @@
 import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
 # Note: Feature Scaling is Compulsary for implementing Neural Networks'
 
 '_________________________________________________________________________________________________________________________________________'
@@ -53,14 +56,14 @@ cnn.add(tf.keras.layers.Conv2D( # We are adding a convolutional Layer Now
     
     filters = 32, # You are free to use as many filters as you can
     kernel_size = 3, #  It is the size of the filters. 
-    activation = "Relu", # Relu means Rectified Linear Unit and it is used for classification purpose
+    activation = "relu", # Relu means Rectified Linear Unit and it is used for classification purpose
     input_shape = [100,100,3] # We are adding 3 at index 2 for feeding colour images
 
 )) 
 
 # Pooling
 
-cnn.add(tf.keras.models.MaxPool2D(
+cnn.add(tf.keras.layers.MaxPool2D(
     
     pool_size=2,
     strides = 2,
@@ -75,11 +78,11 @@ cnn.add(tf.keras.layers.Conv2D(
     
     filters = 32, 
     kernel_size = 3, 
-    activation = "Relu",
+    activation = "relu",
 
 )) 
 
-cnn.add(tf.keras.models.MaxPool2D(
+cnn.add(tf.keras.layers.MaxPool2D(
     
     pool_size=2,
     strides = 2,
@@ -109,6 +112,30 @@ cnn.add(tf.keras.layers.Dense( # Output Layer
 
 '_________________________________________________________________________________________________________________________________________'
 
+"Training the CNN Model"
+
+# Compiling the CNN
+cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+# Training the CNN on the Training set and evaluating it on the Test set
+cnn.fit(x = data_train, validation_data = data_test, epochs = 25)
 
 
+"__________________________________________________________________________________________________________________________________________"
+"Making a single prediction"
 
+import numpy as np
+from keras.preprocessing import image
+test_image = image.load_img('D:/My_Github_New/Deep_Learning/Convolutional_Neural_Networks/dataset/single_prediction/cat_or_dog_1.jpg', target_size = (64, 64))
+test_image = image.img_to_array(test_image)
+test_image = np.expand_dims(test_image, axis = 0)
+result = cnn.predict(test_image)
+data_train.class_indices
+if result[0][0] == 1:
+    prediction = 'dog'
+else:
+    prediction = 'cat'
+print(prediction)
+
+
+"__________________________________________________________________________________________________________________________________________"
